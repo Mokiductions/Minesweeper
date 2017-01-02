@@ -9,25 +9,30 @@ public class Game extends JPanel implements Runnable {
 
     private int P_WIDTH = 300; // Ancho de la pantalla
     private int P_HEIGHT = 300; // Alto de la pantalla
-    private int CELLS = 10;
-    private int BOMBS = 10;
+    private int CELLS = 10; // Cantidad de celdas del tablero (siempre sera cuadrado)
+    private int BOMBS = 1; // Cantidad de bombas en el tablero
 
     private Thread updater;
     private boolean running;
 
     private Cell[][] cells;
 
+    private boolean gameOver = false;
+    private boolean win;
+
     private Graphics gr;
     private Image image = null;
 
     public Game(JFrame frame) {
 
+        // Inicializa las celdas del tablero
         initCells();
 
         // Establece el fondo del panel
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(P_WIDTH, P_HEIGHT));
 
+        // Pone el foco en el panel y llama al inicializador del escuchador de raton
         setFocusable(true);
         requestFocus();
         initMouseListener();
@@ -112,24 +117,33 @@ public class Game extends JPanel implements Runnable {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                // Obtiene la celda en la que se ha hecho click
                 Point p = new Point(e.getX(), e.getY());
                 Point clickedCell = getClickedCell(p);
                 Cell c = cells[clickedCell.x][clickedCell.y];
+
+                // Gestion del click izquierdo
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     if (!c.hasFlag()) {
+                        // Si la celda no tiene bandera, actua
                         if (c.getValue() == 0) {
+                            // Si la celda contiene un 0, escanea las celdas adyacentes
                             scanForEmptyCells(clickedCell.x, clickedCell.y);
                         } else if (c.getValue() == -1) {
                             System.out.println("BOMBA");
+                            // Aqui finalizar el juego, el jugador ha perdido
+                            gameOver = true;
                         } else {
-                            System.out.println("Valor:" + c.getValue());
+                            // La celda contiene un valor distinto a 0, la muestra
                             c.show();
                         }
                     }
                 }
+
+                // Gestion del click derecho
                 if (SwingUtilities.isRightMouseButton(e)) {
-                    System.out.println("Clicked right");
                     if (!c.isShowed()) {
+                        // Si la celda no está mostrada, coloca bandera
                         c.flag();
                     }
                 }
@@ -147,6 +161,11 @@ public class Game extends JPanel implements Runnable {
         });
     }
 
+    /**
+     * Devuelve la posicion X e Y de la celda clickada dentro del array
+     * @param p Point - Punto del panel en el que ha hecho click el raton
+     * @return Point - Posicion X e Y de la celda dentro del array
+     */
     private Point getClickedCell(Point p) {
         for (int i = 0; i < cells.length; i++) {
             for (int j = 0; j < cells[0].length; j++) {
@@ -212,6 +231,22 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
+    public boolean win() {
+        boolean win = true;
+        for (Cell[] cellLine : cells) {
+            if (!win) {
+                break;
+            }
+            for (Cell cell : cellLine) {
+                if (cell.getValue() != 0 && !cell.isShowed()) {
+                    win = false;
+                    break;
+                }
+            }
+        }
+        return win;
+    }
+
     @Override
     public void addNotify() {
         super.addNotify();
@@ -226,8 +261,18 @@ public class Game extends JPanel implements Runnable {
         }
     } // End of startGame()
 
+    /**
+     * Comprueba si la partida ha finalizado o no.
+     */
     private void gameUpdate() {
-
+        win = win();
+        if (gameOver) {
+         // El usuario ha perdido
+            System.out.println("perdiste, noob.");
+        } else if (win){
+            // Comprobar si el usuario ha ganado (escanear el tablero en su totalidad)
+            System.out.println("ganaste, proaso.");
+        }
     } // End of gameUpdate()
 
     /**
@@ -249,7 +294,6 @@ public class Game extends JPanel implements Runnable {
                 cell.draw(gr);
             }
         }
-
     } // End of gameRender()
 
     /**
@@ -271,9 +315,11 @@ public class Game extends JPanel implements Runnable {
     public void run() {
         running = true;
         while (running) {
-            gameUpdate();
-            gameRender();
-            paintScreen();
+            if (!gameOver && !win) {
+                gameUpdate();
+                gameRender();
+                paintScreen();
+            }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
