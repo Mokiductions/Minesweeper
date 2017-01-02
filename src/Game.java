@@ -1,7 +1,11 @@
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,7 +22,7 @@ public class Game extends JPanel implements Runnable {
     private Cell[][] cells;
 
     private boolean gameOver = false;
-    private boolean win;
+    private boolean stop = false;
 
     private Graphics gr;
     private Image image = null;
@@ -130,8 +134,12 @@ public class Game extends JPanel implements Runnable {
                             // Si la celda contiene un 0, escanea las celdas adyacentes
                             scanForEmptyCells(clickedCell.x, clickedCell.y);
                         } else if (c.getValue() == -1) {
-                            System.out.println("BOMBA");
-                            // Aqui finalizar el juego, el jugador ha perdido
+                            // Reproduce el sonido de la bomba.
+                            //playBombSound();
+
+                            // Destapa el tablero completamente
+
+
                             gameOver = true;
                         } else {
                             // La celda contiene un valor distinto a 0, la muestra
@@ -159,6 +167,28 @@ public class Game extends JPanel implements Runnable {
                 // Nothing
             }
         });
+    }
+
+    private void showBoard() {
+        for (Cell[] cellLine : cells) {
+            for (Cell cell : cellLine) {
+                if (!cell.isShowed()) {
+                    cell.show();
+                }
+            }
+        }
+    }
+
+    private void playBombSound() {
+        try {
+            AudioInputStream ais = AudioSystem.getAudioInputStream(new File("PATH DE LA BOMBA.WAV").getAbsoluteFile());
+            Clip clip = AudioSystem.getClip();
+            clip.open(ais);
+            clip.start();
+        } catch(Exception ex) {
+            System.out.println("Error reproduciendo el archivo");
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -231,6 +261,10 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Comprueba si queda alguna celda sin destapar que no sea bomba
+     * @return
+     */
     public boolean win() {
         boolean win = true;
         for (Cell[] cellLine : cells) {
@@ -265,13 +299,16 @@ public class Game extends JPanel implements Runnable {
      * Comprueba si la partida ha finalizado o no.
      */
     private void gameUpdate() {
-        win = win();
         if (gameOver) {
          // El usuario ha perdido
             System.out.println("perdiste, noob.");
-        } else if (win){
+            showBoard();
+            stop = true;
+        } else if (win()){
             // Comprobar si el usuario ha ganado (escanear el tablero en su totalidad)
             System.out.println("ganaste, proaso.");
+            showBoard();
+            stop = true;
         }
     } // End of gameUpdate()
 
@@ -315,7 +352,7 @@ public class Game extends JPanel implements Runnable {
     public void run() {
         running = true;
         while (running) {
-            if (!gameOver && !win) {
+            if (!stop) {
                 gameUpdate();
                 gameRender();
                 paintScreen();
