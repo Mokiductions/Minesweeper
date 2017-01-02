@@ -42,6 +42,9 @@ public class Game extends JPanel implements Runnable {
         initMouseListener();
     }
 
+    /**
+     * Inicializa las celdas con sus correspondientes valores.
+     */
     private void initCells() {
         ArrayList<Point> bombs = getBombsLocation();
         int cellSize = P_WIDTH / CELLS;
@@ -60,10 +63,10 @@ public class Game extends JPanel implements Runnable {
     private ArrayList<Point> getBombsLocation() {
         ArrayList<Point> b = new ArrayList<>();
         Point p;
-        for (int i = 0; i < BOMBS;) {
+        for (int i = 0; i < BOMBS; ) {
             p = new Point(ThreadLocalRandom.current().nextInt(0, CELLS),
                     ThreadLocalRandom.current().nextInt(0, CELLS));
-            if(!b.contains(p)) {
+            if (!b.contains(p)) {
                 b.add(p);
                 i++;
             }
@@ -77,7 +80,7 @@ public class Game extends JPanel implements Runnable {
             for (int j = 0; j < cells[0].length; j++) {
                 value = 0;
                 if (cells[i][j].getValue() != -1) {
-                    if (i < CELLS - 1  && cells[i + 1][j].getValue() == -1) {
+                    if (i < CELLS - 1 && cells[i + 1][j].getValue() == -1) {
                         value++;
                     }
                     if (i >= 1 && cells[i - 1][j].getValue() == -1) {
@@ -137,9 +140,6 @@ public class Game extends JPanel implements Runnable {
                             // Reproduce el sonido de la bomba.
                             //playBombSound();
 
-                            // Destapa el tablero completamente
-
-
                             gameOver = true;
                         } else {
                             // La celda contiene un valor distinto a 0, la muestra
@@ -169,6 +169,9 @@ public class Game extends JPanel implements Runnable {
         });
     }
 
+    /**
+     * Destapa el tablero, en caso de finalización del juego
+     */
     private void showBoard() {
         for (Cell[] cellLine : cells) {
             for (Cell cell : cellLine) {
@@ -179,13 +182,17 @@ public class Game extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * Reproduce el sonido de la bomba cuando se destapa una y el usuario pierde.
+     */
     private void playBombSound() {
         try {
+            // Falta introducir el path del archivo .WAV
             AudioInputStream ais = AudioSystem.getAudioInputStream(new File("PATH DE LA BOMBA.WAV").getAbsoluteFile());
             Clip clip = AudioSystem.getClip();
             clip.open(ais);
             clip.start();
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Error reproduciendo el archivo");
             ex.printStackTrace();
         }
@@ -193,6 +200,7 @@ public class Game extends JPanel implements Runnable {
 
     /**
      * Devuelve la posicion X e Y de la celda clickada dentro del array
+     *
      * @param p Point - Punto del panel en el que ha hecho click el raton
      * @return Point - Posicion X e Y de la celda dentro del array
      */
@@ -207,10 +215,18 @@ public class Game extends JPanel implements Runnable {
         return null;
     }
 
+    /**
+     * Escanea las celdas adyacentes, si contienen un valor de 0, vuelve a escanear las celdas adyacentes a esa, si no
+     * la destapa.
+     *
+     * @param i
+     * @param j
+     */
     private void scanForEmptyCells(int i, int j) {
         System.out.println(i + " " + j);
         if (!cells[i][j].isShowed()) {
             cells[i][j].show();
+
             // Eje horizontal
             if (i < CELLS - 1 && cells[i + 1][j].getValue() == 0) {
                 scanForEmptyCells(i + 1, j);
@@ -238,24 +254,24 @@ public class Game extends JPanel implements Runnable {
             // Diagonal creciente
             if (i < CELLS - 1 && j >= 1 && cells[i + 1][j - 1].getValue() == 0) {
                 scanForEmptyCells(i + 1, j - 1);
-            } else if(i < CELLS - 1 && j >= 1) {
+            } else if (i < CELLS - 1 && j >= 1) {
                 cells[i + 1][j - 1].show();
             }
-            if (i >= 1 && j < CELLS - 1  && cells[i - 1][j + 1].getValue() == 0) {
+            if (i >= 1 && j < CELLS - 1 && cells[i - 1][j + 1].getValue() == 0) {
                 scanForEmptyCells(i - 1, j + 1);
-            } else if(i >= 1 && j < CELLS - 1 ) {
+            } else if (i >= 1 && j < CELLS - 1) {
                 cells[i - 1][j + 1].show();
             }
 
             // Diagonal decreciente
             if (i >= 1 && j >= 1 && cells[i - 1][j - 1].getValue() == 0) {
                 scanForEmptyCells(i - 1, j - 1);
-            } else if(i >= 1 && j >= 1) {
+            } else if (i >= 1 && j >= 1) {
                 cells[i - 1][j - 1].show();
             }
-            if (i < CELLS - 1 && j < CELLS - 1  && cells[i + 1][j + 1].getValue() == 0) {
+            if (i < CELLS - 1 && j < CELLS - 1 && cells[i + 1][j + 1].getValue() == 0) {
                 scanForEmptyCells(i + 1, j + 1);
-            } else if(i < CELLS - 1 && j < CELLS - 1 ) {
+            } else if (i < CELLS - 1 && j < CELLS - 1) {
                 cells[i + 1][j + 1].show();
             }
         }
@@ -263,6 +279,7 @@ public class Game extends JPanel implements Runnable {
 
     /**
      * Comprueba si queda alguna celda sin destapar que no sea bomba
+     *
      * @return
      */
     public boolean win() {
@@ -300,11 +317,11 @@ public class Game extends JPanel implements Runnable {
      */
     private void gameUpdate() {
         if (gameOver) {
-         // El usuario ha perdido
+            // El usuario ha perdido
             System.out.println("perdiste, noob.");
             showBoard();
             stop = true;
-        } else if (win()){
+        } else if (win()) {
             // Comprobar si el usuario ha ganado (escanear el tablero en su totalidad)
             System.out.println("ganaste, proaso.");
             showBoard();
@@ -344,7 +361,7 @@ public class Game extends JPanel implements Runnable {
                 g.drawImage(image, 0, 0, null);
             g.dispose();
         } catch (Exception e) {
-            System.out.println("Error gr?fico: " + e);
+            System.out.println("Error gráfico: " + e);
         }
     } // End of paintScreen()
 
