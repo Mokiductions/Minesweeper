@@ -35,7 +35,6 @@ public class Minesweeper extends JFrame {
      * @param args - not used
      */
     public static void main(String[] args) {
-        //System.out.println("Starting game.");
         new Minesweeper();
     }
 }

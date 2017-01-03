@@ -420,5 +420,5 @@ public class Game extends JPanel implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
+    } // End of run()
 }
