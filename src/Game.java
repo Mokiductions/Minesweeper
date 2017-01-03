@@ -11,10 +11,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Game extends JPanel implements Runnable {
 
-    private int P_WIDTH = 300; // Ancho de la pantalla
-    private int P_HEIGHT = 300; // Alto de la pantalla
+    private int P_WIDTH = 200; // Ancho de la pantalla
+    private int P_HEIGHT = 200; // Alto de la pantalla
     private int CELLS = 10; // Cantidad de celdas del tablero (siempre sera cuadrado)
-    private int BOMBS = 1; // Cantidad de bombas en el tablero
+    private int BOMBS = 5; // Cantidad de bombas en el tablero
 
     private Thread updater;
     private boolean running;
@@ -74,6 +74,9 @@ public class Game extends JPanel implements Runnable {
         return b;
     }
 
+    /**
+     * Calcula el valor de cada celda dependiendo de la cantidad de bombas adycaentes que tenga
+     */
     private void initCellValues() {
         int value;
         for (int i = 0; i < cells.length; i++) {
@@ -151,7 +154,7 @@ public class Game extends JPanel implements Runnable {
                 // Gestion del click derecho
                 if (SwingUtilities.isRightMouseButton(e)) {
                     if (!c.isShowed()) {
-                        // Si la celda no está mostrada, coloca bandera
+                        // Si la celda no estï¿½ mostrada, coloca bandera
                         c.flag();
                     }
                 }
@@ -170,7 +173,7 @@ public class Game extends JPanel implements Runnable {
     }
 
     /**
-     * Destapa el tablero, en caso de finalización del juego
+     * Destapa el tablero, en caso de finalizaciï¿½n del juego
      */
     private void showBoard() {
         for (Cell[] cellLine : cells) {
@@ -223,56 +226,71 @@ public class Game extends JPanel implements Runnable {
      * @param j
      */
     private void scanForEmptyCells(int i, int j) {
-        System.out.println(i + " " + j);
-        if (!cells[i][j].isShowed()) {
+        if (!cells[i][j].isShowed() && cells[i][j].getValue() != -1) {
             cells[i][j].show();
 
             // Eje horizontal
-            if (i < CELLS - 1 && cells[i + 1][j].getValue() == 0) {
-                scanForEmptyCells(i + 1, j);
-            } else if (i < CELLS - 1) {
-                cells[i + 1][j].show();
+            if (i < CELLS - 1) {
+                if (cells[i + 1][j].getValue() == 0) {
+                    scanForEmptyCells(i + 1, j);
+                } else if (cells[i + 1][j].getValue() != -1) {
+                    cells[i + 1][j].show();
+                }
             }
-            if (i >= 1 && cells[i - i][j].getValue() == 0) {
-                scanForEmptyCells(i - 1, j);
-            } else if (i >= 1) {
-                cells[i - 1][j].show();
+            if (i >= 1) {
+                if (cells[i - i][j].getValue() == 0) {
+                    scanForEmptyCells(i - 1, j);
+                } else if (cells[i - 1][j].getValue() != -1) {
+                    cells[i - 1][j].show();
+                }
             }
 
             // Eje vertical
-            if (j < CELLS - 1 && cells[i][j + 1].getValue() == 0) {
-                scanForEmptyCells(i, j + 1);
-            } else if (j < CELLS - 1) {
-                cells[i][j + 1].show();
+            if (j < CELLS - 1) {
+                if (cells[i][j + 1].getValue() == 0) {
+                    scanForEmptyCells(i, j + 1);
+                } else if (cells[i][j + 1].getValue() != -1) {
+                    cells[i][j + 1].show();
+                }
             }
-            if (j >= 1 && cells[i][j - 1].getValue() == 0) {
-                scanForEmptyCells(i, j - 1);
-            } else if (j >= 1) {
-                cells[i][j - 1].show();
+            if (j >= 1) {
+                if (cells[i][j - 1].getValue() == 0) {
+                    scanForEmptyCells(i, j - 1);
+                } else if (cells[i][j - 1].getValue() != -1) {
+                    cells[i][j - 1].show();
+                }
             }
 
             // Diagonal creciente
-            if (i < CELLS - 1 && j >= 1 && cells[i + 1][j - 1].getValue() == 0) {
-                scanForEmptyCells(i + 1, j - 1);
-            } else if (i < CELLS - 1 && j >= 1) {
-                cells[i + 1][j - 1].show();
+            if (i < CELLS - 1 && j >= 1) {
+                if (cells[i + 1][j - 1].getValue() == 0) {
+                    scanForEmptyCells(i + 1, j - 1);
+                } else if (cells[i + 1][j - 1].getValue() != -1) {
+                    cells[i + 1][j - 1].show();
+                }
             }
-            if (i >= 1 && j < CELLS - 1 && cells[i - 1][j + 1].getValue() == 0) {
-                scanForEmptyCells(i - 1, j + 1);
-            } else if (i >= 1 && j < CELLS - 1) {
-                cells[i - 1][j + 1].show();
+            if (i >= 1 && j < CELLS - 1) {
+                if (cells[i - 1][j + 1].getValue() == 0) {
+                    scanForEmptyCells(i - 1, j + 1);
+                } else if (cells[i - 1][j + 1].getValue() != -1) {
+                    cells[i - 1][j + 1].show();
+                }
             }
 
             // Diagonal decreciente
-            if (i >= 1 && j >= 1 && cells[i - 1][j - 1].getValue() == 0) {
-                scanForEmptyCells(i - 1, j - 1);
-            } else if (i >= 1 && j >= 1) {
-                cells[i - 1][j - 1].show();
+            if (i >= 1 && j >= 1) {
+                if (cells[i - 1][j - 1].getValue() == 0) {
+                    scanForEmptyCells(i - 1, j - 1);
+                } else if (cells[i - 1][j - 1].getValue() != -1) {
+                    cells[i - 1][j - 1].show();
+                }
             }
-            if (i < CELLS - 1 && j < CELLS - 1 && cells[i + 1][j + 1].getValue() == 0) {
-                scanForEmptyCells(i + 1, j + 1);
-            } else if (i < CELLS - 1 && j < CELLS - 1) {
-                cells[i + 1][j + 1].show();
+            if (i < CELLS - 1 && j < CELLS - 1) {
+                if (cells[i + 1][j + 1].getValue() == 0) {
+                    scanForEmptyCells(i + 1, j + 1);
+                } else if (cells[i + 1][j + 1].getValue() != -1) {
+                    cells[i + 1][j + 1].show();
+                }
             }
         }
     }
@@ -289,7 +307,7 @@ public class Game extends JPanel implements Runnable {
                 break;
             }
             for (Cell cell : cellLine) {
-                if (cell.getValue() != 0 && !cell.isShowed()) {
+                if (cell.getValue() != -1 && !cell.isShowed()) {
                     win = false;
                     break;
                 }
@@ -318,12 +336,12 @@ public class Game extends JPanel implements Runnable {
     private void gameUpdate() {
         if (gameOver) {
             // El usuario ha perdido
-            System.out.println("perdiste, noob.");
+            System.out.println("perdiste");
             showBoard();
             stop = true;
         } else if (win()) {
             // Comprobar si el usuario ha ganado (escanear el tablero en su totalidad)
-            System.out.println("ganaste, proaso.");
+            System.out.println("ganaste");
             showBoard();
             stop = true;
         }
@@ -361,7 +379,7 @@ public class Game extends JPanel implements Runnable {
                 g.drawImage(image, 0, 0, null);
             g.dispose();
         } catch (Exception e) {
-            System.out.println("Error gráfico: " + e);
+            System.out.println("Error grï¿½fico: " + e);
         }
     } // End of paintScreen()
 
@@ -375,7 +393,7 @@ public class Game extends JPanel implements Runnable {
                 paintScreen();
             }
             try {
-                Thread.sleep(100);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

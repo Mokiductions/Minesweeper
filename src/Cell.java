@@ -25,7 +25,7 @@ public class Cell {
         return value;
     }
 
-    private Rectangle cellLimits() {
+    public Rectangle cellLimits() {
         return new Rectangle(posX, posY, size, size);
     }
 
@@ -43,7 +43,6 @@ public class Cell {
 
     public void flag() {
         flag = !flag;
-        System.out.println(flag);
     }
 
     public boolean hasFlag() {
@@ -52,14 +51,17 @@ public class Cell {
 
     public void draw(Graphics g) {
         // este if solo es para debug
-        if (value == -1) {
-            show();
-            g.setColor(Color.BLACK);
-            g.fillRect(posX, posY, size, size);
-        }
+//        if (value == -1) {
+//            show();
+//            g.setColor(Color.BLACK);
+//            g.fillRect(posX, posY, size, size);
+//        }
 
         // Si la celda ha sido descubierta
         if(show) {
+            g.setColor(Color.CYAN);
+            g.fillRect(posX, posY, size, size);
+            g.setColor(Color.BLACK);
             g.drawString("" + value, posX + 10, posY + 10);
         } else {
             // Si se ha colocado una bandera
