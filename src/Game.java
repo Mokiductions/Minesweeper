@@ -19,14 +19,19 @@ public class Game extends JPanel implements Runnable {
     private Thread updater;
     private boolean running;
 
-    private Cell[][] cells;
+    private Cell[][] cells; // Matriz de celdas formando el tablero de juego
 
-    private boolean gameOver = false;
-    private boolean stop = false;
+    private boolean gameOver = false; // Ha perdido el usuario?
+    private boolean stop = false; // Ha acabado la partida?
 
     private Graphics gr;
     private Image image = null;
 
+    /**
+     * Constructor principal del juego.
+     *
+     * @param frame Frame padre
+     */
     public Game(JFrame frame) {
 
         // Inicializa las celdas del tablero
@@ -40,7 +45,7 @@ public class Game extends JPanel implements Runnable {
         setFocusable(true);
         requestFocus();
         initMouseListener();
-    }
+    } // End of Game() constructor
 
     /**
      * Inicializa las celdas con sus correspondientes valores.
@@ -58,8 +63,13 @@ public class Game extends JPanel implements Runnable {
             cells[p.x][p.y].setValue(-1);
         }
         initCellValues();
-    }
+    } // End of initCells()
 
+    /**
+     * Devuelve las posiciones en las que se colocarán las bombas.
+     *
+     * @return ArrayList<Point> Con las posiciones X e Y de cada bomba
+     */
     private ArrayList<Point> getBombsLocation() {
         ArrayList<Point> b = new ArrayList<>();
         Point p;
@@ -72,7 +82,7 @@ public class Game extends JPanel implements Runnable {
             }
         }
         return b;
-    }
+    } // End of getBombsLocation()
 
     /**
      * Calcula el valor de cada celda dependiendo de la cantidad de bombas adycaentes que tenga
@@ -111,8 +121,11 @@ public class Game extends JPanel implements Runnable {
                 }
             }
         }
-    }
+    } // End of initCellvalues()
 
+    /**
+     * Listener para las acciones del ratón
+     */
     private void initMouseListener() {
         addMouseListener(new MouseListener() {
             @Override
@@ -183,7 +196,7 @@ public class Game extends JPanel implements Runnable {
                 }
             }
         }
-    }
+    } // End of showBoard()
 
     /**
      * Reproduce el sonido de la bomba cuando se destapa una y el usuario pierde.
@@ -199,7 +212,7 @@ public class Game extends JPanel implements Runnable {
             System.out.println("Error reproduciendo el archivo");
             ex.printStackTrace();
         }
-    }
+    } // End of playBombSound()
 
     /**
      * Devuelve la posicion X e Y de la celda clickada dentro del array
@@ -216,14 +229,14 @@ public class Game extends JPanel implements Runnable {
             }
         }
         return null;
-    }
+    } // End of getClickedCell()
 
     /**
      * Escanea las celdas adyacentes, si contienen un valor de 0, vuelve a escanear las celdas adyacentes a esa, si no
      * la destapa.
      *
-     * @param i
-     * @param j
+     * @param i Integer - Posición i de la celda a escanear dentro del tablero
+     * @param j Integer - Posición j de la celda a escanear dentro del tablero
      */
     private void scanForEmptyCells(int i, int j) {
         if (!cells[i][j].isShowed() && cells[i][j].getValue() != -1) {
@@ -293,7 +306,7 @@ public class Game extends JPanel implements Runnable {
                 }
             }
         }
-    }
+    } // End of scanForEmptyCells()
 
     /**
      * Comprueba si queda alguna celda sin destapar que no sea bomba
@@ -314,8 +327,11 @@ public class Game extends JPanel implements Runnable {
             }
         }
         return win;
-    }
+    } // End of win()
 
+    /**
+     * Se asegura de que no empiece el juego hasta que no esté el componente completamente cargado.
+     */
     @Override
     public void addNotify() {
         super.addNotify();
@@ -323,6 +339,9 @@ public class Game extends JPanel implements Runnable {
     } // End of addNotify()
 
 
+    /**
+     * Inicia el bucle principal del juego.
+     */
     private void startGame() {
         if (updater == null || !running) {
             updater = new Thread(this);
@@ -383,6 +402,9 @@ public class Game extends JPanel implements Runnable {
         }
     } // End of paintScreen()
 
+    /**
+     * Bucle principal del juego.
+     */
     @Override
     public void run() {
         running = true;
