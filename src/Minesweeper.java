@@ -71,7 +71,7 @@ public class Minesweeper extends JFrame {
         try {
             i = Integer.parseInt(s);
         } catch (Exception e) {
-            askForOptions();
+            askForBombs();
         }
         return i;
     } // End of askForBombs()
