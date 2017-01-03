@@ -23,7 +23,11 @@ public class Minesweeper extends JFrame {
     private void initGUI() {
         Container c = getContentPane();
         c.setLayout(new BorderLayout(0, 0));
-        Game game = new Game();
+        int width = 200;
+        int height = 200;
+        int cells = 10;
+        int bombs = 10;
+        Game game = new Game(width, height, cells, bombs);
         c.add(game, BorderLayout.CENTER);
     } // End of initGUI()
 

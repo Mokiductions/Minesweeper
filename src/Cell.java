@@ -53,15 +53,20 @@ public class Cell {
         // Si la celda ha sido descubierta
         if (show) {
             if (value == -1) {
+                // Si era una bomba
                 g.setColor(Color.BLACK);
                 g.fillRect(posX, posY, size, size);
+                g.setColor(Color.WHITE);
+                g.drawString("B", posX + 10, posY + 15);
             } else {
+                // Si no es una bomba
                 g.setColor(Color.CYAN);
                 g.fillRect(posX, posY, size, size);
             }
-            if (value != 0) {
+            if (value > 0) {
+                // Si el valor es mayor a 0, muestra el número
                 g.setColor(Color.BLACK);
-                g.drawString("" + value, posX + 10, posY + 20);
+                g.drawString("" + value, posX + 10, posY + 15);
             }
         } else {
             // Si se ha colocado una bandera
@@ -73,7 +78,6 @@ public class Cell {
                 g.fillRect(posX, posY, size, size);
             }
         }
-
 
         // Dibuja el borde del cuadrado
         g.setColor(Color.BLACK);

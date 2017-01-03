@@ -11,9 +11,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Game extends JPanel implements Runnable {
 
-    private int P_WIDTH = 200; // Ancho de la pantalla
-    private int P_HEIGHT = 200; // Alto de la pantalla
-    private final int CELLS = 10; // Cantidad de celdas del tablero (siempre sera cuadrado)
+    private int P_WIDTH; // Ancho de la pantalla
+    private int P_HEIGHT; // Alto de la pantalla
+    private final int CELLS; // Cantidad de celdas del tablero (siempre sera cuadrado)
     private final int BOMBS; // Cantidad de bombas en el tablero
 
     private Thread updater;
@@ -30,8 +30,13 @@ public class Game extends JPanel implements Runnable {
     /**
      * Constructor principal del juego.
      */
-    public Game() {
-        BOMBS = 10;
+    public Game(int w, int h, int c, int b) {
+        // Inicializa las variables del juego
+        P_WIDTH = w;
+        P_HEIGHT = h;
+        CELLS = c;
+        BOMBS = b;
+
         // Inicializa las celdas del tablero
         initCells();
 
@@ -371,13 +376,13 @@ public class Game extends JPanel implements Runnable {
         if (image == null) {
             image = createImage(P_WIDTH, P_HEIGHT);
             if (image == null) {
-                System.out.println("Image is null");
+                System.out.println("Error grafico");
                 return;
             } else
                 gr = image.getGraphics();
         }
 
-        // Dibuja el tablero
+        // Dibuja el tablero, con el estado de cada celda
         for (Cell[] cellLine : cells) {
             for (Cell cell : cellLine) {
                 cell.draw(gr);
@@ -397,7 +402,7 @@ public class Game extends JPanel implements Runnable {
             assert g != null;
             g.dispose();
         } catch (Exception e) {
-            System.out.println("Error gr�fico: " + e);
+            System.out.println("Error grafico: " + e);
         }
     } // End of paintScreen()
 
