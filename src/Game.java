@@ -13,8 +13,8 @@ public class Game extends JPanel implements Runnable {
 
     private int P_WIDTH = 200; // Ancho de la pantalla
     private int P_HEIGHT = 200; // Alto de la pantalla
-    private int CELLS = 10; // Cantidad de celdas del tablero (siempre sera cuadrado)
-    private int BOMBS = 5; // Cantidad de bombas en el tablero
+    private final int CELLS = 10; // Cantidad de celdas del tablero (siempre sera cuadrado)
+    private final int BOMBS; // Cantidad de bombas en el tablero
 
     private Thread updater;
     private boolean running;
@@ -29,11 +29,9 @@ public class Game extends JPanel implements Runnable {
 
     /**
      * Constructor principal del juego.
-     *
-     * @param frame Frame padre
      */
-    public Game(JFrame frame) {
-
+    public Game() {
+        BOMBS = 10;
         // Inicializa las celdas del tablero
         initCells();
 
@@ -143,6 +141,7 @@ public class Game extends JPanel implements Runnable {
                 // Obtiene la celda en la que se ha hecho click
                 Point p = new Point(e.getX(), e.getY());
                 Point clickedCell = getClickedCell(p);
+                assert clickedCell != null;
                 Cell c = cells[clickedCell.x][clickedCell.y];
 
                 // Gestion del click izquierdo
@@ -153,9 +152,9 @@ public class Game extends JPanel implements Runnable {
                             // Si la celda contiene un 0, escanea las celdas adyacentes
                             scanForEmptyCells(clickedCell.x, clickedCell.y);
                         } else if (c.getValue() == -1) {
-                            // Reproduce el sonido de la bomba.
-                            //playBombSound();
-
+                            // Reproduce el sonido de la bomba
+                            playBombSound();
+                            // Indica que el usuario ha perdido
                             gameOver = true;
                         } else {
                             // La celda contiene un valor distinto a 0, la muestra
@@ -210,7 +209,6 @@ public class Game extends JPanel implements Runnable {
             clip.start();
         } catch (Exception ex) {
             System.out.println("Error reproduciendo el archivo");
-            ex.printStackTrace();
         }
     } // End of playBombSound()
 
@@ -251,7 +249,7 @@ public class Game extends JPanel implements Runnable {
                 }
             }
             if (i >= 1) {
-                if (cells[i - i][j].getValue() == 0) {
+                if (cells[i - 1][j].getValue() == 0) {
                     scanForEmptyCells(i - 1, j);
                 } else if (cells[i - 1][j].getValue() != -1) {
                     cells[i - 1][j].show();
@@ -311,7 +309,7 @@ public class Game extends JPanel implements Runnable {
     /**
      * Comprueba si queda alguna celda sin destapar que no sea bomba
      *
-     * @return
+     * @return Estado de victoria.
      */
     public boolean win() {
         boolean win = true;
@@ -396,6 +394,7 @@ public class Game extends JPanel implements Runnable {
             g = this.getGraphics();
             if ((g != null) && (image != null))
                 g.drawImage(image, 0, 0, null);
+            assert g != null;
             g.dispose();
         } catch (Exception e) {
             System.out.println("Error gr�fico: " + e);

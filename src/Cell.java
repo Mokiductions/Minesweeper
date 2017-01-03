@@ -50,26 +50,24 @@ public class Cell {
     } // End of hasFlag()
 
     public void draw(Graphics g) {
-        // este if solo es para debug
-//        if (value == -1) {
-//            show();
-//            g.setColor(Color.BLACK);
-//            g.fillRect(posX, posY, size, size);
-//        }
-
         // Si la celda ha sido descubierta
-        if(show) {
-            g.setColor(Color.CYAN);
-            g.fillRect(posX, posY, size, size);
-            g.setColor(Color.BLACK);
-            g.drawString("" + value, posX + 10, posY + 10);
+        if (show) {
+            if (value == -1) {
+                g.setColor(Color.BLACK);
+                g.fillRect(posX, posY, size, size);
+            } else {
+                g.setColor(Color.CYAN);
+                g.fillRect(posX, posY, size, size);
+            }
+            if (value != 0) {
+                g.setColor(Color.BLACK);
+                g.drawString("" + value, posX + 10, posY + 20);
+            }
         } else {
             // Si se ha colocado una bandera
             if (flag) {
                 g.setColor(Color.PINK);
                 g.fillRect(posX, posY, size, size);
-                g.setColor(Color.BLACK);
-                g.drawString("F", posX + 10, posY + 10);
             } else {
                 g.setColor(Color.WHITE);
                 g.fillRect(posX, posY, size, size);

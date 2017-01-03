@@ -3,8 +3,6 @@ import java.awt.*;
 
 public class Minesweeper extends JFrame {
 
-    private Game game;
-
     public Minesweeper() {
         super("Minesweeper!");
         initGUI();
@@ -25,7 +23,7 @@ public class Minesweeper extends JFrame {
     private void initGUI() {
         Container c = getContentPane();
         c.setLayout(new BorderLayout(0, 0));
-        game = new Game(this);
+        Game game = new Game();
         c.add(game, BorderLayout.CENTER);
     } // End of initGUI()
 
